@@ -1,37 +1,31 @@
-[x, fs, bits] = wavread('layla.wav');
+[x, fs, bits] = wavread('layla.wav'); // Reading input file
 
-// Projeto do filtro
-N = 5;
-delta = 0.1;
-fc = 5000;
-fdig = fc/fs;
+// Filter parameters
+N = 5;          // Filter order
+delta = 0.1;    // Phase delay
+fc = 5000;      // Cutoff frequency
+fdig = fc/fs;   // Normalized cutoff frequency
  
-Hz=iir(N,'hp','cheb1',[fdig fdig],[delta delta]);
+Hz = iir(N, 'hp', 'cheb1', [fdig fdig], [delta delta]); // Filter design Chebyshev 1
 
-// analise
-[Xm,fr]=frmag(Hz,1000);
-plot(fr*fs,Xm);
+[Xm, fr] = frmag(Hz, 1000);  // Magnitude IIR filter
+plot(fr*fs, Xm);             // Plot of filter frequency response
 
-// filtragem
-yr = flts(x(1,:),Hz);
-yl = flts(x(2,:),Hz);
+// Filtering of both stereo tracks
+yr = flts(x(1,:), Hz);  // Right side
+yl = flts(x(2,:), Hz);  // Left side
+y = [yr;yl];            // Putting both sides back
 
-y = [yr;yl];
+savewave('filtered_cheb.wav', y, fs, bits); // Generating output file for Chebyshev 1
 
-//playsnd(y,fs,bits);
-savewave('filtered_cheb.wav',y , fs , bits);
+Hz = iir(N, 'hp', 'butt', [fdig fdig], [delta delta]); // Filter design Butterworth
 
-Hz=iir(N,'hp','butt',[fdig fdig],[delta delta]);
+[Xm,fr] = frmag(Hz, 1000);   // Magnitude IIR filter
+plot(fr*fs, Xm);             // Plot of filter frequency response
 
-// analise
-[Xm,fr]=frmag(Hz,1000);
-plot(fr*fs,Xm);
+// Filtering of both stereo tracks
+yr = flts(x(1,:), Hz);  // Right side
+yl = flts(x(2,:), Hz);  // Left side
+y = [yr;yl];            // Putting both sides back
 
-// filtragem
-yr = flts(x(1,:),Hz);
-yl = flts(x(2,:),Hz);
-
-y = [yr;yl];
-
-//playsnd(y,fs,bits);
-savewave('filtered_butt.wav',y , fs , bits);
+savewave('filtered_butt.wav', y, fs, bits); // Generating output file for Butterworth
