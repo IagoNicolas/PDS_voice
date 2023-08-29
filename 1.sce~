@@ -9,6 +9,7 @@ wc = w/%pi;              // Phase shift angle
 
 // Filter design High-Pass
 [wft, wfm, fr] = wfir('hp', M+1, [wc/2.0], 're', [0, 0]);
+// Turns the filter above into a discrete time linear system
 Hz=syslin('d',poly(wft,'z','c')./%z**33);
 
 // Frequency response plot of an ideal filter
